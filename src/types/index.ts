@@ -15,11 +15,13 @@ export interface DiaryEntry {
 }
 
 export type RootStackParamList = {
+  Login: undefined;
+  SignUp: undefined;
   Home: undefined;
   Create: undefined;
   Detail: { id: string };
   Edit: { id: string };
-  BottomTabs: undefined;
+  BottomTabs: { screen?: keyof BottomTabParamList };
 };
 
 export type BottomTabParamList = {

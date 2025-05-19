@@ -8,6 +8,7 @@ import {
   ScrollView,
   Platform,
   StatusBar,
+  KeyboardAvoidingView,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation } from "@react-navigation/native";
@@ -61,7 +62,10 @@ const CreateScreen: React.FC = () => {
         updatedAt: new Date().toISOString(),
       };
 
+      console.log("저장할 일기:", newEntry);
       await saveDiaryEntry(newEntry);
+      console.log("일기 저장 완료");
+
       Alert.alert("성공", "일기가 저장되었습니다.", [
         { text: "확인", onPress: () => navigation.goBack() },
       ]);
@@ -87,20 +91,31 @@ const CreateScreen: React.FC = () => {
         </TouchableOpacity>
       </View>
 
-      <ScrollView
-        style={styles.scrollView}
-        contentContainerStyle={styles.scrollViewContent}
-        showsVerticalScrollIndicator={false}
+      <KeyboardAvoidingView
+        style={styles.keyboardAvoid}
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
       >
-        <Text style={styles.dateText}>{getCurrentDate()} 일기</Text>
+        <ScrollView
+          style={styles.scrollView}
+          contentContainerStyle={styles.scrollViewContent}
+          showsVerticalScrollIndicator={false}
+        >
+          <Text style={styles.dateText}>{getCurrentDate()} 일기</Text>
 
-        <EmotionSelector
-          onEmotionSelect={handleEmotionSelect}
-          selectedEmotion={selectedEmotion}
-        />
+          <EmotionSelector
+            onEmotionSelect={handleEmotionSelect}
+            selectedEmotion={selectedEmotion}
+          />
 
-        <DiaryTextInput value={content} onChangeText={handleContentChange} />
-      </ScrollView>
+          <DiaryTextInput value={content} onChangeText={handleContentChange} />
+        </ScrollView>
+
+        <View style={styles.bottomButtonContainer}>
+          <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
+            <Text style={styles.saveButtonText}>저장하기</Text>
+          </TouchableOpacity>
+        </View>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 };
@@ -109,6 +124,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
+  },
+  keyboardAvoid: {
+    flex: 1,
   },
   header: {
     flexDirection: "row",
@@ -139,6 +157,23 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     marginVertical: 16,
     textAlign: "center",
+  },
+  bottomButtonContainer: {
+    padding: 12,
+    borderTopWidth: 1,
+    borderTopColor: "#eee",
+    backgroundColor: "white",
+  },
+  saveButton: {
+    backgroundColor: "#6200ee",
+    paddingVertical: 16,
+    borderRadius: 8,
+    alignItems: "center",
+  },
+  saveButtonText: {
+    color: "white",
+    fontWeight: "bold",
+    fontSize: 16,
   },
 });
 

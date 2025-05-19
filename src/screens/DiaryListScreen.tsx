@@ -7,12 +7,13 @@ import {
   TouchableOpacity,
   ActivityIndicator,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList, DiaryEntry } from "../types";
 import { getDiaryEntries } from "../utils/storage";
 import DiaryItem from "../components/DiaryItem";
+import SafeAreaWrapper from "../components/SafeAreaWrapper";
+import { Ionicons } from "@expo/vector-icons";
 
 type DiaryListScreenNavigationProp = StackNavigationProp<
   RootStackParamList,
@@ -37,6 +38,8 @@ const DiaryListScreen: React.FC = () => {
     setLoading(true);
     try {
       const entries = await getDiaryEntries();
+      console.log("불러온 일기 항목:", entries.length, entries);
+
       // 날짜 기준 내림차순 정렬 (최신순)
       const sortedEntries = entries.sort(
         (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
@@ -59,27 +62,35 @@ const DiaryListScreen: React.FC = () => {
 
   if (loading) {
     return (
-      <SafeAreaView style={styles.container} edges={["top", "left", "right"]}>
+      <SafeAreaWrapper excludeEdges={["bottom"]} style={styles.container}>
         <View style={styles.header}>
-          <Text style={styles.headerTitle}>다이어리 목록</Text>
+          <Text style={styles.headerTitle}>일기 목록</Text>
         </View>
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color="#6200ee" />
         </View>
-      </SafeAreaView>
+      </SafeAreaWrapper>
     );
   }
 
   return (
-    <SafeAreaView style={styles.container} edges={["top", "left", "right"]}>
+    <SafeAreaWrapper excludeEdges={["bottom"]} style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>다이어리 목록</Text>
-        <TouchableOpacity
-          style={styles.createButton}
-          onPress={handleCreatePress}
-        >
-          <Text style={styles.createButtonText}>새 일기</Text>
+        <Text style={styles.headerTitle}>일기 목록</Text>
+        <TouchableOpacity style={styles.calendarButton} onPress={() => {}}>
+          <Ionicons name="calendar-outline" size={22} color="#333" />
+          <Text style={styles.calendarText}>달력 보기</Text>
         </TouchableOpacity>
+      </View>
+
+      <View style={styles.searchContainer}>
+        <Ionicons
+          name="search-outline"
+          size={20}
+          color="#888"
+          style={styles.searchIcon}
+        />
+        <Text style={styles.searchPlaceholder}>일기 검색...</Text>
       </View>
 
       {diaryEntries.length === 0 ? (
@@ -104,37 +115,52 @@ const DiaryListScreen: React.FC = () => {
           contentContainerStyle={styles.listContainer}
         />
       )}
-    </SafeAreaView>
+    </SafeAreaWrapper>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
+    backgroundColor: "#f8f9fa",
   },
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
     padding: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: "#e0e0e0",
   },
   headerTitle: {
-    fontSize: 20,
+    fontSize: 22,
     fontWeight: "bold",
   },
-  createButton: {
-    backgroundColor: "#228be6",
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 6,
+  calendarButton: {
+    flexDirection: "row",
+    alignItems: "center",
   },
-  createButtonText: {
-    color: "white",
-    fontWeight: "600",
+  calendarText: {
+    marginLeft: 4,
     fontSize: 14,
+    color: "#333",
+  },
+  searchContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "white",
+    marginHorizontal: 16,
+    marginBottom: 16,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: "#e0e0e0",
+  },
+  searchIcon: {
+    marginRight: 8,
+  },
+  searchPlaceholder: {
+    color: "#888",
+    fontSize: 15,
   },
   listContainer: {
     padding: 16,
@@ -167,26 +193,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-  },
-  diaryItem: {
-    padding: 16,
-    borderRadius: 8,
-    backgroundColor: "#f8f8f8",
-    marginBottom: 12,
-  },
-  diaryHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 8,
-  },
-  diaryDate: {
-    fontWeight: "500",
-  },
-  diaryEmotion: {
-    color: "#666",
-  },
-  diaryContent: {
-    color: "#333",
   },
 });
 

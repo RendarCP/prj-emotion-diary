@@ -1,17 +1,17 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import SafeAreaWrapper from "../components/SafeAreaWrapper";
 
 const StatisticsScreen: React.FC = () => {
   return (
-    <SafeAreaView style={styles.container} edges={["top", "left", "right"]}>
+    <SafeAreaWrapper excludeEdges={["bottom"]} style={styles.container}>
       <View style={styles.content}>
         <Text style={styles.title}>통계</Text>
         <Text style={styles.subtitle}>
           감정 통계 기능이 곧 추가될 예정입니다.
         </Text>
       </View>
-    </SafeAreaView>
+    </SafeAreaWrapper>
   );
 };
 
